@@ -3,7 +3,7 @@ package auth
 
 // Example:
 // func SecretAuth(username, password string) bool {
-// 	if username == "astaxie" && password == "helloBeego" {
+// 	if username == "zhaocloud" && password == "helloBeego" {
 // 		return true
 // 	}
 // 	return false
@@ -16,8 +16,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
+	"github.com/zhaocloud/beego"
+	"github.com/zhaocloud/beego/context"
 )
 
 func NewBasicAuthenticator(secrets SecretProvider, Realm string) beego.FilterFunc {

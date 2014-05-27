@@ -6,7 +6,7 @@ import (
 
 	"github.com/beego/memcache"
 
-	"github.com/astaxie/beego/cache"
+	"github.com/zhaocloud/beego/cache"
 )
 
 // Memcache adapter.

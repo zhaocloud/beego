@@ -7,7 +7,7 @@ import (
 
 	"github.com/couchbaselabs/go-couchbase"
 
-	"github.com/astaxie/beego/session"
+	"github.com/zhaocloud/beego/session"
 )
 
 var couchbpder = &CouchbaseProvider{}

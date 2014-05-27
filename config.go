@@ -9,10 +9,10 @@ import (
     "strconv"
     "strings"
 
-    "github.com/astaxie/beego/config"
-    "github.com/astaxie/beego/logs"
-    "github.com/astaxie/beego/session"
-    "github.com/astaxie/beego/utils"
+    "github.com/zhaocloud/beego/config"
+    "github.com/zhaocloud/beego/logs"
+    "github.com/zhaocloud/beego/session"
+    "github.com/zhaocloud/beego/utils"
 )
 
 var (

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/example/beeapi/controllers"
+	"github.com/zhaocloud/beego"
+	"github.com/zhaocloud/beego/example/beeapi/controllers"
 )
 
 //		Objects

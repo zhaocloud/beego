@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	beecontext "github.com/astaxie/beego/context"
-	"github.com/astaxie/beego/middleware"
-	"github.com/astaxie/beego/toolbox"
-	"github.com/astaxie/beego/utils"
+	beecontext "github.com/zhaocloud/beego/context"
+	"github.com/zhaocloud/beego/middleware"
+	"github.com/zhaocloud/beego/toolbox"
+	"github.com/zhaocloud/beego/utils"
 )
 
 const (

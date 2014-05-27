@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/astaxie/beego/middleware"
-	"github.com/astaxie/beego/session"
+	"github.com/zhaocloud/beego/middleware"
+	"github.com/zhaocloud/beego/session"
 )
 
 // beego web framework version.

@@ -11,7 +11,7 @@ type TestController struct {
 }
 
 func (this *TestController) Get() {
-	this.Data["Username"] = "astaxie"
+	this.Data["Username"] = "zhaocloud"
 	this.Ctx.Output.Body([]byte("ok"))
 }
 
@@ -46,7 +46,7 @@ func (this *JsonController) Prepare() {
 }
 
 func (this *JsonController) Get() {
-	this.Data["Username"] = "astaxie"
+	this.Data["Username"] = "zhaocloud"
 	this.Ctx.Output.Body([]byte("ok"))
 }
 

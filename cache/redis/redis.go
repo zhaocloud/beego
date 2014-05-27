@@ -7,7 +7,7 @@ import (
 
 	"github.com/beego/redigo/redis"
 
-	"github.com/astaxie/beego/cache"
+	"github.com/zhaocloud/beego/cache"
 )
 
 var (

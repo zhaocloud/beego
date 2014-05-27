@@ -10,44 +10,44 @@ func TestCache(t *testing.T) {
 	if err != nil {
 		t.Error("init err")
 	}
-	if err = bm.Put("astaxie", 1, 10); err != nil {
+	if err = bm.Put("zhaocloud", 1, 10); err != nil {
 		t.Error("set Error", err)
 	}
-	if !bm.IsExist("astaxie") {
+	if !bm.IsExist("zhaocloud") {
 		t.Error("check err")
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 1 {
+	if v := bm.Get("zhaocloud"); v.(int) != 1 {
 		t.Error("get err")
 	}
 
 	time.Sleep(30 * time.Second)
 
-	if bm.IsExist("astaxie") {
+	if bm.IsExist("zhaocloud") {
 		t.Error("check err")
 	}
 
-	if err = bm.Put("astaxie", 1, 10); err != nil {
+	if err = bm.Put("zhaocloud", 1, 10); err != nil {
 		t.Error("set Error", err)
 	}
 
-	if err = bm.Incr("astaxie"); err != nil {
+	if err = bm.Incr("zhaocloud"); err != nil {
 		t.Error("Incr Error", err)
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 2 {
+	if v := bm.Get("zhaocloud"); v.(int) != 2 {
 		t.Error("get err")
 	}
 
-	if err = bm.Decr("astaxie"); err != nil {
+	if err = bm.Decr("zhaocloud"); err != nil {
 		t.Error("Incr Error", err)
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 1 {
+	if v := bm.Get("zhaocloud"); v.(int) != 1 {
 		t.Error("get err")
 	}
-	bm.Delete("astaxie")
-	if bm.IsExist("astaxie") {
+	bm.Delete("zhaocloud")
+	if bm.IsExist("zhaocloud") {
 		t.Error("delete err")
 	}
 }
@@ -57,45 +57,45 @@ func TestFileCache(t *testing.T) {
 	if err != nil {
 		t.Error("init err")
 	}
-	if err = bm.Put("astaxie", 1, 10); err != nil {
+	if err = bm.Put("zhaocloud", 1, 10); err != nil {
 		t.Error("set Error", err)
 	}
-	if !bm.IsExist("astaxie") {
+	if !bm.IsExist("zhaocloud") {
 		t.Error("check err")
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 1 {
+	if v := bm.Get("zhaocloud"); v.(int) != 1 {
 		t.Error("get err")
 	}
 
-	if err = bm.Incr("astaxie"); err != nil {
+	if err = bm.Incr("zhaocloud"); err != nil {
 		t.Error("Incr Error", err)
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 2 {
+	if v := bm.Get("zhaocloud"); v.(int) != 2 {
 		t.Error("get err")
 	}
 
-	if err = bm.Decr("astaxie"); err != nil {
+	if err = bm.Decr("zhaocloud"); err != nil {
 		t.Error("Incr Error", err)
 	}
 
-	if v := bm.Get("astaxie"); v.(int) != 1 {
+	if v := bm.Get("zhaocloud"); v.(int) != 1 {
 		t.Error("get err")
 	}
-	bm.Delete("astaxie")
-	if bm.IsExist("astaxie") {
+	bm.Delete("zhaocloud")
+	if bm.IsExist("zhaocloud") {
 		t.Error("delete err")
 	}
 	//test string
-	if err = bm.Put("astaxie", "author", 10); err != nil {
+	if err = bm.Put("zhaocloud", "author", 10); err != nil {
 		t.Error("set Error", err)
 	}
-	if !bm.IsExist("astaxie") {
+	if !bm.IsExist("zhaocloud") {
 		t.Error("check err")
 	}
 
-	if v := bm.Get("astaxie"); v.(string) != "author" {
+	if v := bm.Get("zhaocloud"); v.(string) != "author" {
 		t.Error("get err")
 	}
 }

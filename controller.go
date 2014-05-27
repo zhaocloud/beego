@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/astaxie/beego/context"
-	"github.com/astaxie/beego/session"
-	"github.com/astaxie/beego/utils"
+	"github.com/zhaocloud/beego/context"
+	"github.com/zhaocloud/beego/session"
+	"github.com/zhaocloud/beego/utils"
 )
 
 var (

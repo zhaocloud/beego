@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/astaxie/beego/context"
+	"github.com/zhaocloud/beego/context"
 )
 
 var FilterUser = func(ctx *context.Context) {
@@ -43,12 +43,12 @@ func TestPatternTwo(t *testing.T) {
 }
 
 func TestPatternThree(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/admin/astaxie", nil)
+	r, _ := http.NewRequest("GET", "/admin/zhaocloud", nil)
 	w := httptest.NewRecorder()
 	handler := NewControllerRegistor()
 	handler.AddFilter("/admin/:all", "AfterStatic", FilterAdminUser)
 	handler.ServeHTTP(w, r)
 	if w.Body.String() != "i am admin" {
-		t.Errorf("filter /admin/astaxie can't run")
+		t.Errorf("filter /admin/zhaocloud can't run")
 	}
 }

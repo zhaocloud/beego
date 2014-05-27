@@ -1,7 +1,7 @@
 package beego
 
 import (
-    "github.com/astaxie/beego/logs"
+    "github.com/zhaocloud/beego/logs"
 )
 
 // logger references the used application logger.

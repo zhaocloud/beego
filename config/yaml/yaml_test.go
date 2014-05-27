@@ -57,10 +57,10 @@ func TestYaml(t *testing.T) {
 		t.Error(v)
 		t.Fatal(err)
 	}
-	if err = yamlconf.Set("name", "astaxie"); err != nil {
+	if err = yamlconf.Set("name", "zhaocloud"); err != nil {
 		t.Fatal(err)
 	}
-	if yamlconf.String("name") != "astaxie" {
+	if yamlconf.String("name") != "zhaocloud" {
 		t.Fatal("get name error")
 	}
 }

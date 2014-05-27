@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/astaxie/beego"
+	"github.com/zhaocloud/beego"
 	"github.com/gorilla/websocket"
 )
 

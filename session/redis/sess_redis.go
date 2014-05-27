@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/astaxie/beego/session"
+	"github.com/zhaocloud/beego/session"
 
 	"github.com/beego/redigo/redis"
 )
@@ -98,7 +98,7 @@ type RedisProvider struct {
 
 // init redis session
 // savepath like redis server addr,pool size,password
-// e.g. 127.0.0.1:6379,100,astaxie
+// e.g. 127.0.0.1:6379,100,zhaocloud
 func (rp *RedisProvider) SessionInit(maxlifetime int64, savePath string) error {
 	rp.maxlifetime = maxlifetime
 	configs := strings.Split(savePath, ",")

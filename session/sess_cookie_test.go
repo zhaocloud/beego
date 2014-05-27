@@ -16,11 +16,11 @@ func TestCookie(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 	sess := globalSessions.SessionStart(w, r)
-	err = sess.Set("username", "astaxie")
+	err = sess.Set("username", "zhaocloud")
 	if err != nil {
 		t.Fatal("set error,", err)
 	}
-	if username := sess.Get("username"); username != "astaxie" {
+	if username := sess.Get("username"); username != "zhaocloud" {
 		t.Fatal("get username error")
 	}
 	sess.SessionRelease(w)

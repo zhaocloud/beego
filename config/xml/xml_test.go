@@ -60,10 +60,10 @@ func TestXML(t *testing.T) {
 		t.Error(v)
 		t.Fatal(err)
 	}
-	if err = xmlconf.Set("name", "astaxie"); err != nil {
+	if err = xmlconf.Set("name", "zhaocloud"); err != nil {
 		t.Fatal(err)
 	}
-	if xmlconf.String("name") != "astaxie" {
+	if xmlconf.String("name") != "zhaocloud" {
 		t.Fatal("get name error")
 	}
 }

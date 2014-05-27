@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/example/beeapi/models"
+	"github.com/zhaocloud/beego"
+	"github.com/zhaocloud/beego/example/beeapi/models"
 )
 
 type ObjectController struct {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/astaxie/beego/toolbox"
-	"github.com/astaxie/beego/utils"
+	"github.com/zhaocloud/beego/toolbox"
+	"github.com/zhaocloud/beego/utils"
 )
 
 // BeeAdminApp is the default adminApp used by admin module.
@@ -22,7 +22,7 @@ var beeAdminApp *adminApp
 //	 	if t.Nanoseconds() < 100 {
 //			return false
 //	 	}
-//	 	if strings.HasPrefix(requestPath, "/astaxie") {
+//	 	if strings.HasPrefix(requestPath, "/zhaocloud") {
 //			return false
 //	 	}
 //	 	return true

@@ -3,7 +3,7 @@ package beego
 import (
 	"strings"
 
-	"github.com/astaxie/beego/logs"
+	"github.com/zhaocloud/beego/logs"
 )
 
 // Log levels to control the logging output.

@@ -1,7 +1,7 @@
 package middleware
 
 //import (
-//	"github.com/astaxie/beego/config"
+//	"github.com/zhaocloud/beego/config"
 //	"os"
 //	"path"
 //)

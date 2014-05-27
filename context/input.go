@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/astaxie/beego/session"
+	"github.com/zhaocloud/beego/session"
 )
 
 // BeegoInput operates the http request header ,data ,cookie and body.
