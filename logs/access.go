@@ -234,6 +234,15 @@ func (w *AccessLogWriter) Flush() {
     w.mw.fd.Sync()
 }
 
+// log access message.
+func (bl *BeeLogger) Access(format string, v ...interface{}) {
+    msg := fmt.Sprintf(format, v...)
+    lm := new(logMsg)
+    lm.level = LevelCritical //最高级别
+    lm.msg = msg
+    bl.msg <- lm
+}
+
 func init() {
     Register("access", NewAccessWriter)
 }
