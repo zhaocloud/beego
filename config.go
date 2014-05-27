@@ -95,7 +95,7 @@ func init() {
     HttpAddr = ""
     HttpPort = 8080
 
-    AppName = "beego"
+    AppName = "zhaocloud"
 
     RunMode = "dev" //default runmod
 
