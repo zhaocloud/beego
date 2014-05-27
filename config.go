@@ -142,9 +142,16 @@ func init() {
 
     runtime.GOMAXPROCS(runtime.NumCPU())
 
+    // init AccessLogger
+    AccessLogger = logs.NewLogger(10000)
+    if err := AccessLogger.SetLogger("access", "{}"); err != nil {
+        fmt.Println("init access log error:", err)
+    }
+
     // init BeeLogger
     BeeLogger = logs.NewLogger(10000)
-    err := BeeLogger.SetLogger("console", "")
+    //err := BeeLogger.SetLogger("console", "")
+    err := BeeLogger.SetLogger("file", `{"filename":"logs/debug.log"}`)
     if err != nil {
         fmt.Println("init console log error:", err)
     }
