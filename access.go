@@ -9,7 +9,8 @@ import (
 var AccessLogger *logs.BeeLogger
 
 func Access(v ...interface{}) {
-    AccessLogger.Access(generateAccessFmt(len(v)), v...)
+    format := generateAccessFmt(len(v))
+    AccessLogger.Access(format, v...)
 }
 
 func generateAccessFmt(n int) string {

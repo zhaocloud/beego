@@ -75,7 +75,8 @@ func NewAccessWriter() LoggerInterface {
     // use AccessMuxWriter instead direct use os.File for lock write when rotate
     w.mw = new(AccessMuxWriter)
     // set AccessMuxWriter as Logger's io.Writer
-    w.Logger = log.New(w.mw, "", log.Ldate|log.Ltime)
+    //w.Logger = log.New(w.mw, "", log.Ldate|log.Ltime)
+    w.Logger = log.New(w.mw, "", 0)
     return w
 }
 
@@ -135,8 +136,7 @@ func (w *AccessLogWriter) WriteMsg(msg string, level int) error {
     if level < w.Level {
         return nil
     }
-    n := 24 + len(msg) // 24 stand for the length "2013/06/23 21:00:22 [T] "
-    w.docheck(n)
+    w.docheck(len(msg))
     w.Logger.Println(msg)
     return nil
 }
