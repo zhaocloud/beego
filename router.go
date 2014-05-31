@@ -3,13 +3,11 @@ package beego
 import (
     "bufio"
     "errors"
-    "fmt"
     "net"
     "net/http"
     "net/url"
     "reflect"
     "regexp"
-    "runtime"
     "strconv"
     "strings"
     "time"
@@ -455,68 +453,10 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     defer func() {
         if err := recover(); err != nil {
-            if err == USERSTOPRUN {
-                return
-            }
-            if _, ok := err.(middleware.HTTPException); ok {
-                // catch intented errors, only for HTTP 4XX and 5XX
-            } else {
-                if RunMode == "dev" {
-                    if !RecoverPanic {
-                        panic(err)
-                    } else {
-                        if ErrorsShow {
-                            if handler, ok := middleware.ErrorMaps[fmt.Sprint(err)]; ok {
-                                handler(rw, r)
-                                return
-                            }
-                        }
-                        var stack string
-                        Critical("the request url is ", r.URL.Path)
-                        Critical("Handler crashed with error", err)
-                        for i := 1; ; i++ {
-                            _, file, line, ok := runtime.Caller(i)
-                            if !ok {
-                                break
-                            }
-                            Critical(file, line)
-                            stack = stack + fmt.Sprintln(file, line)
-                        }
-                        //middleware.ShowErr(err, rw, r, stack)
-                        middleware.ShowErr(err, w, r, stack)
-                    }
-                } else {
-                    if !RecoverPanic {
-                        panic(err)
-                    } else {
-                        // in production model show all infomation
-                        if ErrorsShow {
-                            handler := p.getErrorHandler(fmt.Sprint(err))
-                            handler(rw, r)
-                            return
-                        } else {
-                            Critical("the request url is ", r.URL.Path)
-                            Critical("Handler crashed with error", err)
-                            for i := 1; ; i++ {
-                                _, file, line, ok := runtime.Caller(i)
-                                if !ok {
-                                    break
-                                }
-                                Critical(file, line)
-                            }
-                        }
-                    }
-                }
-
-            }
+            context.Output.RESTErr(err, r)
         }
         //save access log
-        Debug("status1:", w.status, ":status2:", context.Output.Status, ";content-type1:", w.writer.Header().Get("Content-Type"), ";content-type2:", rw.Header().Get("Content-Type"), ";content-type3:", context.Output.Context.ResponseWriter.Header().Get("Content-Type"), ";content-type4:", w.Header().Get("Content-Type"))
-        sc := w.status
-        if sc == 0 {
-            sc = http.StatusOK
-        }
-        Access(strconv.Quote(starttime.Format(time.RFC3339)), strconv.Quote(r.RemoteAddr), sc, w.Header().Get("Content-Length"), strconv.Quote(w.Header().Get("Content-Type")), strconv.Quote(r.Method), strconv.Quote(r.RequestURI), strconv.Quote(r.Proto), strconv.FormatFloat(time.Since(starttime).Seconds(), 'f', 6, 64))
+        SaveAccess(starttime, w, r)
     }()
 
     // defined filter function
