@@ -4,31 +4,11 @@ import (
     "compress/flate"
     "compress/gzip"
     "encoding/json"
-    "fmt"
     "io"
     "net/http"
     "strconv"
     "strings"
 )
-
-type RESTError struct {
-    Massage string            `json:"massage"`
-    Errors  map[string]string `json:"errors"`
-}
-
-// render default application error page with error and stack string.
-func (output *BeegoOutput) RESTErr(err interface{}, r *http.Request) {
-    errors := make(map[string]string)
-    errors["method"] = r.Method
-    errors["resource"] = r.RequestURI
-    errors["code"] = "inner_error"
-
-    re := RESTError{
-        Massage: fmt.Sprint(err),
-        Errors:  errors,
-    }
-    output.RESTJson(http.StatusInternalServerError, re, true, true)
-}
 
 func (output *BeegoOutput) RESTJson(status int, data interface{}, hasIndent bool, coding bool) error {
     output.Header("Content-Type", "application/json;charset=UTF-8")
@@ -69,7 +49,8 @@ func (output *BeegoOutput) RESTJson(status int, data interface{}, hasIndent bool
     } else {
         output.Header("Content-Length", strconv.Itoa(len(content)))
     }
-    output.Context.ResponseWriter.WriteHeader(status)
+    output.SetStatus(status)
+    //output.Context.ResponseWriter.WriteHeader(status)
     output_writer.Write(content)
     switch output_writer.(type) {
     case *gzip.Writer:

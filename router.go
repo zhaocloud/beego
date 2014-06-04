@@ -453,10 +453,10 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     defer func() {
         if err := recover(); err != nil {
-            context.Output.RESTErr(err, r)
+            context.Output.RESTPanic(err)
         }
         //save access log
-        SaveAccess(starttime, w, r)
+        SaveAccess(starttime, context)
     }()
 
     // defined filter function
@@ -487,7 +487,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     }
 
     if !utils.InSlice(strings.ToLower(r.Method), HTTPMETHOD) {
-        http.Error(w, "Method Not Allowed", 405)
+        context.Output.RESTMethodNotAllowed(errors.New("Method Not Allowed"))
         goto Admin
     }
     //static file server
@@ -636,7 +636,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     //if no matches to url, throw a not found exception
     if !findrouter {
-        middleware.Exception("404", rw, r, "")
+        context.Output.RESTMethodNotAllowed(errors.New("Not Found"))
         goto Admin
     }
 
