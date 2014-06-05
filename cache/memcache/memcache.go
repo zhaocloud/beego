@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package cache
 
 import (
@@ -105,7 +111,6 @@ func (rc *MemcacheCache) IsExist(key string) bool {
 	} else {
 		return true
 	}
-	return true
 }
 
 // clear all cached in memcache.
@@ -132,9 +137,11 @@ func (rc *MemcacheCache) StartAndGC(config string) error {
 	}
 	rc.conninfo = cf["conn"]
 	var err error
-	rc.c, err = rc.connectInit()
-	if err != nil {
-		return errors.New("dial tcp conn error")
+	if rc.c != nil {
+		rc.c, err = rc.connectInit()
+		if err != nil {
+			return errors.New("dial tcp conn error")
+		}
 	}
 	return nil
 }

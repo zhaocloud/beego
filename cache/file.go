@@ -1,8 +1,9 @@
-/**
- * package: file
- * User: gouki
- * Date: 2013-10-22 - 14:22
- */
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package cache
 
 import (

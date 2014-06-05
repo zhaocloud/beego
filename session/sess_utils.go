@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package session
 
 import (
@@ -28,6 +34,9 @@ func init() {
 }
 
 func EncodeGob(obj map[interface{}]interface{}) ([]byte, error) {
+	for _, v := range obj {
+		gob.Register(v)
+	}
 	buf := bytes.NewBuffer(nil)
 	enc := gob.NewEncoder(buf)
 	err := enc.Encode(obj)
@@ -164,8 +173,6 @@ func decodeCookie(block cipher.Block, hashKey, name, value string, gcmaxlifetime
 	} else {
 		return dst, nil
 	}
-	// Done.
-	return nil, nil
 }
 
 // Encoding -------------------------------------------------------------------

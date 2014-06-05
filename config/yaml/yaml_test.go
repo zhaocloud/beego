@@ -1,8 +1,16 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package config
 
 import (
 	"os"
 	"testing"
+
+	"github.com/zhaocloud/beego/config"
 )
 
 var yamlcontext = `
@@ -27,7 +35,7 @@ func TestYaml(t *testing.T) {
 	}
 	f.Close()
 	defer os.Remove("testyaml.conf")
-	yamlconf, err := NewConfig("yaml", "testyaml.conf")
+	yamlconf, err := config.NewConfig("yaml", "testyaml.conf")
 	if err != nil {
 		t.Fatal(err)
 	}

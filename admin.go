@@ -1,8 +1,15 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package beego
 
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/zhaocloud/beego/toolbox"
@@ -47,15 +54,16 @@ func init() {
 // AdminIndex is the default http.Handler for admin module.
 // it matches url pattern "/".
 func adminIndex(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("Welcome to Admin Dashboard\n"))
-	rw.Write([]byte("There are servral functions:\n"))
-	rw.Write([]byte("1. Record all request and request time, http://localhost:8088/qps\n"))
-	rw.Write([]byte("2. Get runtime profiling data by the pprof, http://localhost:8088/prof\n"))
-	rw.Write([]byte("3. Get healthcheck result from http://localhost:8088/healthcheck\n"))
-	rw.Write([]byte("4. Get current task infomation from taskhttp://localhost:8088/task \n"))
-	rw.Write([]byte("5. To run a task passed a param http://localhost:8088/runtask\n"))
-	rw.Write([]byte("6. Get all confige & router infomation http://localhost:8088/listconf\n"))
-
+	rw.Write([]byte("<html><head><title>beego admin dashboard</title></head><body>"))
+	rw.Write([]byte("Welcome to Admin Dashboard<br>\n"))
+	rw.Write([]byte("There are servral functions:<br>\n"))
+	rw.Write([]byte("1. Record all request and request time, <a href='/qps'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/qps</a><br>\n"))
+	rw.Write([]byte("2. Get runtime profiling data by the pprof, <a href='/prof'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/prof</a><br>\n"))
+	rw.Write([]byte("3. Get healthcheck result from <a href='/healthcheck'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/healthcheck</a><br>\n"))
+	rw.Write([]byte("4. Get current task infomation from task <a href='/task'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/task</a><br> \n"))
+	rw.Write([]byte("5. To run a task passed a param <a href='/runtask'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/runtask</a><br>\n"))
+	rw.Write([]byte("6. Get all confige & router infomation <a href='/listconf'>http://localhost:" + strconv.Itoa(AdminHttpPort) + "/listconf</a><br>\n"))
+	rw.Write([]byte("</body></html>"))
 }
 
 // QpsIndex is the http.Handler for writing qbs statistics map result info in http.ResponseWriter.
@@ -174,10 +182,12 @@ func listConf(rw http.ResponseWriter, r *http.Request) {
 			rw.Write([]byte("command not support"))
 		}
 	} else {
-		rw.Write([]byte("ListConf support this command:\n"))
-		rw.Write([]byte("1. command=conf\n"))
-		rw.Write([]byte("2. command=router\n"))
-		rw.Write([]byte("3. command=filter\n"))
+		rw.Write([]byte("<html><head><title>beego admin dashboard</title></head><body>"))
+		rw.Write([]byte("ListConf support this command:<br>\n"))
+		rw.Write([]byte("1. <a href='?command=conf'>command=conf</a><br>\n"))
+		rw.Write([]byte("2. <a href='?command=router'>command=router</a><br>\n"))
+		rw.Write([]byte("3. <a href='?command=filter'>command=filter</a><br>\n"))
+		rw.Write([]byte("</body></html>"))
 	}
 }
 
@@ -189,16 +199,18 @@ func profIndex(rw http.ResponseWriter, r *http.Request) {
 	if command != "" {
 		toolbox.ProcessInput(command, rw)
 	} else {
-		rw.Write([]byte("request url like '/prof?command=lookup goroutine'\n"))
-		rw.Write([]byte("the command have below types:\n"))
-		rw.Write([]byte("1. lookup goroutine\n"))
-		rw.Write([]byte("2. lookup heap\n"))
-		rw.Write([]byte("3. lookup threadcreate\n"))
-		rw.Write([]byte("4. lookup block\n"))
-		rw.Write([]byte("5. start cpuprof\n"))
-		rw.Write([]byte("6. stop cpuprof\n"))
-		rw.Write([]byte("7. get memprof\n"))
-		rw.Write([]byte("8. gc summary\n"))
+		rw.Write([]byte("<html><head><title>beego admin dashboard</title></head><body>"))
+		rw.Write([]byte("request url like '/prof?command=lookup goroutine'<br>\n"))
+		rw.Write([]byte("the command have below types:<br>\n"))
+		rw.Write([]byte("1. <a href='?command=lookup goroutine'>lookup goroutine</a><br>\n"))
+		rw.Write([]byte("2. <a href='?command=lookup heap'>lookup heap</a><br>\n"))
+		rw.Write([]byte("3. <a href='?command=lookup threadcreate'>lookup threadcreate</a><br>\n"))
+		rw.Write([]byte("4. <a href='?command=lookup block'>lookup block</a><br>\n"))
+		rw.Write([]byte("5. <a href='?command=start cpuprof'>start cpuprof</a><br>\n"))
+		rw.Write([]byte("6. <a href='?command=stop cpuprof'>stop cpuprof</a><br>\n"))
+		rw.Write([]byte("7. <a href='?command=get memprof'>get memprof</a><br>\n"))
+		rw.Write([]byte("8. <a href='?command=gc summary'>gc summary</a><br>\n"))
+		rw.Write([]byte("</body></html>"))
 	}
 }
 
@@ -232,7 +244,7 @@ func runTask(rw http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			fmt.Fprintf(rw, "%v", err)
 		}
-		fmt.Fprintf(rw, "%s run success,Now the Status is %s", t.GetStatus())
+		fmt.Fprintf(rw, "%s run success,Now the Status is %s", taskname, t.GetStatus())
 	} else {
 		fmt.Fprintf(rw, "there's no task which named:%s", taskname)
 	}

@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     slene
+
 package orm
 
 import (
@@ -10,7 +16,7 @@ import (
 
 // register models.
 // prefix means table name prefix.
-func registerModel(model interface{}, prefix string) {
+func registerModel(prefix string, model interface{}) {
 	val := reflect.ValueOf(model)
 	ind := reflect.Indirect(val)
 	typ := ind.Type()
@@ -286,23 +292,17 @@ end:
 
 // register models
 func RegisterModel(models ...interface{}) {
-	if modelCache.done {
-		panic(fmt.Errorf("RegisterModel must be run before BootStrap"))
-	}
-
-	for _, model := range models {
-		registerModel(model, "")
-	}
+	RegisterModelWithPrefix("", models...)
 }
 
-// register model with a prefix
+// register models with a prefix
 func RegisterModelWithPrefix(prefix string, models ...interface{}) {
 	if modelCache.done {
 		panic(fmt.Errorf("RegisterModel must be run before BootStrap"))
 	}
 
 	for _, model := range models {
-		registerModel(model, prefix)
+		registerModel(prefix, model)
 	}
 }
 

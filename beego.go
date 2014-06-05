@@ -1,4 +1,9 @@
-// beego is an open-source, high-performance web framework for the Go programming language
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package beego
 
 import (
@@ -14,7 +19,7 @@ import (
 )
 
 // beego web framework version.
-const VERSION = "1.1.4"
+const VERSION = "1.2.0"
 
 type hookfunc func() error //hook function to run
 var hooks []hookfunc       //hook function slice to store the hookfunc
@@ -113,6 +118,60 @@ func AutoRouter(c ControllerInterface) *App {
 // it's same to App.AutoRouterWithPrefix.
 func AutoPrefix(prefix string, c ControllerInterface) *App {
 	BeeApp.AutoRouterWithPrefix(prefix, c)
+	return BeeApp
+}
+
+// register router for Get method
+func Get(rootpath string, f FilterFunc) *App {
+	BeeApp.Get(rootpath, f)
+	return BeeApp
+}
+
+// register router for Post method
+func Post(rootpath string, f FilterFunc) *App {
+	BeeApp.Post(rootpath, f)
+	return BeeApp
+}
+
+// register router for Delete method
+func Delete(rootpath string, f FilterFunc) *App {
+	BeeApp.Delete(rootpath, f)
+	return BeeApp
+}
+
+// register router for Put method
+func Put(rootpath string, f FilterFunc) *App {
+	BeeApp.Put(rootpath, f)
+	return BeeApp
+}
+
+// register router for Head method
+func Head(rootpath string, f FilterFunc) *App {
+	BeeApp.Head(rootpath, f)
+	return BeeApp
+}
+
+// register router for Options method
+func Options(rootpath string, f FilterFunc) *App {
+	BeeApp.Options(rootpath, f)
+	return BeeApp
+}
+
+// register router for Patch method
+func Patch(rootpath string, f FilterFunc) *App {
+	BeeApp.Patch(rootpath, f)
+	return BeeApp
+}
+
+// register router for all method
+func Any(rootpath string, f FilterFunc) *App {
+	BeeApp.Any(rootpath, f)
+	return BeeApp
+}
+
+// register router for own Handler
+func Handler(rootpath string, h http.Handler, options ...interface{}) *App {
+	BeeApp.Handler(rootpath, h, options...)
 	return BeeApp
 }
 

@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     slene
+
 package orm
 
 import (
@@ -83,7 +89,6 @@ func (e *JsonField) SetRaw(value interface{}) error {
 	default:
 		return fmt.Errorf("<JsonField.SetRaw> unknown value `%v`", value)
 	}
-	return nil
 }
 
 func (e *JsonField) RawValue() interface{} {
@@ -122,7 +127,7 @@ type DataNull struct {
 	Char        string          `orm:"null;size(50)"`
 	Text        string          `orm:"null;type(text)"`
 	Date        time.Time       `orm:"null;type(date)"`
-	DateTime    time.Time       `orm:"null;column(datetime)""`
+	DateTime    time.Time       `orm:"null;column(datetime)"`
 	Byte        byte            `orm:"null"`
 	Rune        rune            `orm:"null"`
 	Int         int             `orm:"null"`
@@ -205,6 +210,8 @@ type User struct {
 	Nums       int
 	Langs      SliceStringField `orm:"size(100)"`
 	Extra      JsonField        `orm:"type(text)"`
+	unexport   bool             `orm:"-"`
+	unexport_  bool
 }
 
 func (u *User) TableIndex() [][]string {

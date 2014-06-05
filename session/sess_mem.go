@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package session
 
 import (
@@ -35,7 +41,6 @@ func (st *MemSessionStore) Get(key interface{}) interface{} {
 	} else {
 		return nil
 	}
-	return nil
 }
 
 // delete in memory session by key
@@ -94,7 +99,6 @@ func (pder *MemProvider) SessionRead(sid string) (SessionStore, error) {
 		pder.lock.Unlock()
 		return newsess, nil
 	}
-	return nil, nil
 }
 
 // check session store exist in memory session by sid
@@ -129,7 +133,6 @@ func (pder *MemProvider) SessionRegenerate(oldsid, sid string) (SessionStore, er
 		pder.lock.Unlock()
 		return newsess, nil
 	}
-	return nil, nil
 }
 
 // delete session store in memory session by id

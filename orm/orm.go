@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     slene
+
 package orm
 
 import (
@@ -293,7 +299,7 @@ func (o *orm) queryRelated(md interface{}, name string) (*modelInfo, *fieldInfo,
 	}
 
 	if qs == nil {
-		panic(fmt.Errorf("<Ormer> name `%s` for model `%s` is not an available rel/reverse field"))
+		panic(fmt.Errorf("<Ormer> name `%s` for model `%s` is not an available rel/reverse field", md, name))
 	}
 
 	return mi, fi, ind, qs
@@ -441,8 +447,6 @@ func (o *orm) Driver() Driver {
 
 func (o *orm) GetDB() dbQuerier {
 	panic(ErrNotImplement)
-	// not enough
-	return o.db
 }
 
 // create new orm

@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package beego
 
 import (
@@ -17,6 +23,13 @@ import (
 	"github.com/zhaocloud/beego/context"
 	"github.com/zhaocloud/beego/session"
 	"github.com/zhaocloud/beego/utils"
+)
+
+//commonly used mime-types
+const (
+	applicationJson = "application/json"
+	applicationXml  = "applicatoin/xml"
+	textXml         = "text/xml"
 )
 
 var (
@@ -40,7 +53,8 @@ type Controller struct {
 	CruSession     session.SessionStore
 	XSRFExpire     int
 	AppController  interface{}
-	EnableReander  bool
+	EnableRender   bool
+	EnableXSRF     bool
 }
 
 // ControllerInterface is an interface to uniform all controller handler.
@@ -69,7 +83,8 @@ func (c *Controller) Init(ctx *context.Context, controllerName, actionName strin
 	c.Ctx = ctx
 	c.TplExt = "tpl"
 	c.AppController = app
-	c.EnableReander = true
+	c.EnableRender = true
+	c.EnableXSRF = true
 	c.Data = ctx.Input.Data
 }
 
@@ -120,7 +135,7 @@ func (c *Controller) Options() {
 
 // Render sends the response with rendered template bytes as text/html type.
 func (c *Controller) Render() error {
-	if !c.EnableReander {
+	if !c.EnableRender {
 		return nil
 	}
 	rb, err := c.RenderBytes()
@@ -153,7 +168,6 @@ func (c *Controller) RenderBytes() ([]byte, error) {
 		newbytes := bytes.NewBufferString("")
 		if _, ok := BeeTemplates[c.TplNames]; !ok {
 			panic("can't find templatefile in the path:" + c.TplNames)
-			return []byte{}, errors.New("can't find templatefile in the path:" + c.TplNames)
 		}
 		err := BeeTemplates[c.TplNames].ExecuteTemplate(newbytes, c.TplNames, c.Data)
 		if err != nil {
@@ -199,7 +213,6 @@ func (c *Controller) RenderBytes() ([]byte, error) {
 		ibytes := bytes.NewBufferString("")
 		if _, ok := BeeTemplates[c.TplNames]; !ok {
 			panic("can't find templatefile in the path:" + c.TplNames)
-			return []byte{}, errors.New("can't find templatefile in the path:" + c.TplNames)
 		}
 		err := BeeTemplates[c.TplNames].ExecuteTemplate(ibytes, c.TplNames, c.Data)
 		if err != nil {
@@ -209,7 +222,6 @@ func (c *Controller) RenderBytes() ([]byte, error) {
 		icontent, _ := ioutil.ReadAll(ibytes)
 		return icontent, nil
 	}
-	return []byte{}, nil
 }
 
 // Redirect sends the redirection response to url with status code.
@@ -243,7 +255,6 @@ func (c *Controller) UrlFor(endpoint string, values ...string) string {
 	} else {
 		return UrlFor(endpoint, values...)
 	}
-	return ""
 }
 
 // ServeJson sends a json response with encoding charset.
@@ -281,6 +292,20 @@ func (c *Controller) ServeXml() {
 		hasIndent = true
 	}
 	c.Ctx.Output.Xml(c.Data["xml"], hasIndent)
+}
+
+// ServeFormatted serve Xml OR Json, depending on the value of the Accept header
+
+func (c *Controller) ServeFormatted() {
+	accept := c.Ctx.Input.Header("Accept")
+	switch accept {
+	case applicationJson:
+		c.ServeJson()
+	case applicationXml, textXml:
+		c.ServeXml()
+	default:
+		c.ServeJson()
+	}
 }
 
 // Input returns the input data map from POST or PUT request body and query string.
@@ -439,6 +464,9 @@ func (c *Controller) XsrfToken() string {
 // the token can provided in request header "X-Xsrftoken" and "X-CsrfToken"
 // or in form field value named as "_xsrf".
 func (c *Controller) CheckXsrfCookie() bool {
+	if !c.EnableXSRF {
+		return true
+	}
 	token := c.GetString("_xsrf")
 	if token == "" {
 		token = c.Ctx.Request.Header.Get("X-Xsrftoken")

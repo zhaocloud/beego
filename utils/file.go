@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package utils
 
 import (
@@ -58,23 +64,29 @@ func GrepFile(patten string, filename string) (lines []string, err error) {
 	lines = make([]string, 0)
 	reader := bufio.NewReader(fd)
 	prefix := ""
+	isLongLine := false
 	for {
 		byteLine, isPrefix, er := reader.ReadLine()
 		if er != nil && er != io.EOF {
 			return nil, er
 		}
+		if er == io.EOF {
+			break
+		}
 		line := string(byteLine)
 		if isPrefix {
 			prefix += line
 			continue
+		} else {
+			isLongLine = true
 		}
 
 		line = prefix + line
+		if isLongLine {
+			prefix = ""
+		}
 		if re.MatchString(line) {
 			lines = append(lines, line)
-		}
-		if er == io.EOF {
-			break
 		}
 	}
 	return lines, nil

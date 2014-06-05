@@ -60,3 +60,21 @@ some http request need setcookie. So set it like this:
 	cookie.Value  = "astaxie"
 	httplib.Get("http://beego.me/").SetCookie(cookie)
 
+## upload file
+httplib support mutil file upload, use `b.PostFile()`
+
+	b:=httplib.Post("http://beego.me/")
+	b.Param("username","astaxie")
+	b.Param("password","123456")
+	b.PostFile("uploadfile1", "httplib.pdf")
+	b.PostFile("uploadfile2", "httplib.txt")
+	str, err := b.String()
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(str)
+
+## set HTTP version
+some servers need to specify the protocol version of HTTP
+
+	httplib.Get("http://beego.me/").SetProtocolVersion("HTTP/1.1")

@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package cache
 
 import (
@@ -40,7 +46,7 @@ func TestCache(t *testing.T) {
 	}
 
 	if err = bm.Decr("zhaocloud"); err != nil {
-		t.Error("Incr Error", err)
+		t.Error("Decr Error", err)
 	}
 
 	if v := bm.Get("zhaocloud"); v.(int) != 1 {
@@ -77,7 +83,7 @@ func TestFileCache(t *testing.T) {
 	}
 
 	if err = bm.Decr("zhaocloud"); err != nil {
-		t.Error("Incr Error", err)
+		t.Error("Decr Error", err)
 	}
 
 	if v := bm.Get("zhaocloud"); v.(int) != 1 {

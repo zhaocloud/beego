@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package toolbox
 
 import (
@@ -48,7 +54,7 @@ func ProcessInput(input string, w io.Writer) {
 // record memory profile in pprof
 func MemProf() {
 	if f, err := os.Create("mem-" + strconv.Itoa(pid) + ".memprof"); err != nil {
-		log.Fatal("record memory profile failed: %v", err)
+		log.Fatal("record memory profile failed: ", err)
 	} else {
 		runtime.GC()
 		pprof.WriteHeapProfile(f)

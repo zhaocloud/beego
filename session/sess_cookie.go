@@ -1,3 +1,9 @@
+// Beego (http://beego.me/)
+// @description beego is an open-source, high-performance web framework for the Go programming language.
+// @link        http://github.com/zhaocloud/beego for the canonical source repository
+// @license     http://github.com/zhaocloud/beego/blob/master/LICENSE
+// @authors     zhaocloud
+
 package session
 
 import (
@@ -36,7 +42,6 @@ func (st *CookieSessionStore) Get(key interface{}) interface{} {
 	} else {
 		return nil
 	}
-	return nil
 }
 
 // Delete value in cookie session
@@ -73,7 +78,8 @@ func (st *CookieSessionStore) SessionRelease(w http.ResponseWriter) {
 		Value:    url.QueryEscape(str),
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   cookiepder.config.Secure}
+		Secure:   cookiepder.config.Secure,
+		MaxAge:   cookiepder.config.Maxage}
 	http.SetCookie(w, cookie)
 	return
 }
