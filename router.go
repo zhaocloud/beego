@@ -630,25 +630,6 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         SaveAccess(starttime, context)
     }()
 
-    // defined filter function
-    do_filter := func(pos int) (started bool) {
-        if p.enableFilter {
-            if l, ok := p.filters[pos]; ok {
-                for _, filterR := range l {
-                    if ok, p := filterR.ValidRouter(r.URL.Path); ok {
-                        context.Input.Params = p
-                        filterR.filterFunc(context)
-                        if w.started {
-                            return true
-                        }
-                    }
-                }
-            }
-        }
-
-        return false
-    }
-
     // session init
     if SessionOn {
         context.Input.CruSession = GlobalSessions.SessionStart(w, r)
@@ -671,14 +652,6 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
             context.Input.CopyBody()
         }
         context.Input.ParseFormOrMulitForm(MaxMemory)
-    }
-
-    if do_filter(BeforeRouter) {
-        goto Admin
-    }
-
-    if do_filter(AfterStatic) {
-        goto Admin
     }
 
     if context.Input.RunController != nil && context.Input.RunMethod != "" {
@@ -818,10 +791,6 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     }
 
     if findrouter {
-        //execute middleware filters
-        if do_filter(BeforeExec) {
-            goto Admin
-        }
         isRunable := false
         if routerInfo != nil {
             if routerInfo.routerType == routerTypeRESTFul {
@@ -899,13 +868,8 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
             execController.Finish()
         }
 
-        //execute middleware filters
-        if do_filter(AfterExec) {
-            goto Admin
-        }
     }
 
-    do_filter(FinishRouter)
 Admin:
     //admin module record QPS
     if EnableAdmin {
