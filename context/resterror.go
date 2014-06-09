@@ -15,7 +15,7 @@ type RESTErrorData struct {
 func (output *BeegoOutput) RESTError(status int, err interface{}) {
     errors := make(map[string]string)
     errors["method"] = output.Context.Input.Method()
-    errors["resource"] = output.Context.Input.Uri()
+    errors["endpoint"] = output.Context.Input.GetData("_endpoint").(string)
     errors["code"] = "service_panic"
 
     re := RESTErrorData{
@@ -38,4 +38,9 @@ func (output *BeegoOutput) RESTNotFound(err interface{}) {
 //MethodNotAllowed
 func (output *BeegoOutput) RESTMethodNotAllowed(err interface{}) {
     output.RESTError(http.StatusMethodNotAllowed, err)
+}
+
+// NotFound
+func (output *BeegoOutput) RESTBadRequest(err interface{}) {
+    output.RESTError(http.StatusBadRequest, err)
 }

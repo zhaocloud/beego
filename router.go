@@ -9,12 +9,13 @@ package beego
 import (
     "bufio"
     "errors"
+    "fmt"
     "net"
     "net/http"
     "net/url"
     "reflect"
     "regexp"
-    "strconv"
+    "runtime"
     "strings"
     "time"
 
@@ -78,6 +79,7 @@ type ControllerRegistor struct {
     filters      map[int][]*FilterRouter
     enableAuto   bool
     autoRouter   map[string]map[string]reflect.Type //key:controller key:method value:reflect.type
+    zhaoRouter   map[string]*zhaoControllerInfo     //半auto模式, added by odin
 }
 
 // NewControllerRegistor returns a new ControllerRegistor.
@@ -86,6 +88,7 @@ func NewControllerRegistor() *ControllerRegistor {
         routers:    make([]*controllerInfo, 0),
         autoRouter: make(map[string]map[string]reflect.Type),
         filters:    make(map[int][]*FilterRouter),
+        zhaoRouter: make(map[string]*zhaoControllerInfo),
     }
 }
 
@@ -600,9 +603,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     starttime := time.Now()
     requestPath := r.URL.Path
     var runrouter reflect.Type
-    var findrouter bool
     var runMethod string
-    var routerInfo *controllerInfo
     params := make(map[string]string)
 
     w := &responseWriter{writer: rw}
@@ -624,6 +625,17 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     defer func() {
         if err := recover(); err != nil {
+            var stack string
+            Critical("the request url is ", r.URL.Path)
+            Critical("Handler crashed with error", err)
+            for i := 1; ; i++ {
+                _, file, line, ok := runtime.Caller(i)
+                if !ok {
+                    break
+                }
+                Critical(file, line)
+                stack = stack + fmt.Sprintln(file, line)
+            }
             context.Output.RESTPanic(err)
         }
         //save access log
@@ -654,220 +666,58 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         context.Input.ParseFormOrMulitForm(MaxMemory)
     }
 
-    if context.Input.RunController != nil && context.Input.RunMethod != "" {
-        findrouter = true
-        runMethod = context.Input.RunMethod
-        runrouter = context.Input.RunController
-    }
+    //解析请求
+    parseRequest(requestPath, context)
 
-    //first find path from the fixrouters to Improve Performance
-    if !findrouter {
-        for _, route := range p.fixrouters {
-            n := len(requestPath)
-            if requestPath == route.pattern {
-                runMethod = p.getRunMethod(r.Method, context, route)
-                if runMethod != "" {
-                    routerInfo = route
-                    runrouter = route.controllerType
-                    findrouter = true
-                    break
-                }
-            }
-            // pattern /admin   url /admin 200  /admin/ 200
-            // pattern /admin/  url /admin 301  /admin/ 200
-            if requestPath[n-1] != '/' && requestPath+"/" == route.pattern {
-                http.Redirect(w, r, requestPath+"/", 301)
-                goto Admin
-            }
-            if requestPath[n-1] == '/' && route.pattern+"/" == requestPath {
-                runMethod = p.getRunMethod(r.Method, context, route)
-                if runMethod != "" {
-                    routerInfo = route
-                    runrouter = route.controllerType
-                    findrouter = true
-                    break
-                }
-            }
-            if route.routerType == routerTypeHandler && route.isPrefix &&
-                strings.HasPrefix(requestPath, route.pattern) {
-
-                routerInfo = route
-                runrouter = route.controllerType
-                findrouter = true
-                break
-            }
-        }
-    }
-
-    //find regex's router
-    if !findrouter {
-        //find a matching Route
-        for _, route := range p.routers {
-
-            //check if Route pattern matches url
-            if !route.regex.MatchString(requestPath) {
-                continue
-            }
-
-            //get submatches (params)
-            matches := route.regex.FindStringSubmatch(requestPath)
-
-            //double check that the Route matches the URL pattern.
-            if len(matches[0]) != len(requestPath) {
-                continue
-            }
-
-            if len(route.params) > 0 {
-                for i, match := range matches[1:] {
-                    params[route.params[i]] = match
-                }
-            }
-            runMethod = p.getRunMethod(r.Method, context, route)
+    if endpoint := context.Input.GetData("_endpoint").(string); endpoint != "" {
+        Debug("endpoint: ", endpoint)
+        if route, ok := p.zhaoRouter[endpoint]; ok {
+            runMethod = p.getZhaoRunMethod(r.Method, context, route)
             if runMethod != "" {
-                routerInfo = route
-                runrouter = route.controllerType
                 context.Input.Params = params
-                findrouter = true
-                break
-            }
-        }
-    }
-
-    if !findrouter && p.enableAuto {
-        // deal with url with diffirent ext
-        // /controller/simple
-        // /controller/simple.html
-        // /controller/simple.json
-        // /controller/simple.rss
-        lastindex := strings.LastIndex(requestPath, "/")
-        lastsub := requestPath[lastindex+1:]
-        if subindex := strings.LastIndex(lastsub, "."); subindex != -1 {
-            context.Input.Params[":ext"] = lastsub[subindex+1:]
-            r.URL.Query().Add(":ext", lastsub[subindex+1:])
-            r.URL.RawQuery = r.URL.Query().Encode()
-            requestPath = requestPath[:len(requestPath)-len(lastsub[subindex:])]
-        }
-        for cName, methodmap := range p.autoRouter {
-            // if prev already find the router break
-            if findrouter {
-                break
-            }
-            if strings.ToLower(requestPath) == "/"+cName {
-                http.Redirect(w, r, requestPath+"/", 301)
-                goto Admin
-            }
-            // if there's no action, set the default action to index
-            if strings.ToLower(requestPath) == "/"+cName+"/" {
-                requestPath = requestPath + "index"
-            }
-            // if the request path start with controllerName
-            if strings.HasPrefix(strings.ToLower(requestPath), "/"+cName+"/") {
-                for mName, controllerType := range methodmap {
-                    if strings.ToLower(requestPath) == "/"+cName+"/"+strings.ToLower(mName) ||
-                        (strings.HasPrefix(strings.ToLower(requestPath), "/"+cName+"/"+strings.ToLower(mName)) &&
-                            requestPath[len("/"+cName+"/"+strings.ToLower(mName)):len("/"+cName+"/"+strings.ToLower(mName))+1] == "/") {
-                        runrouter = controllerType
-                        runMethod = mName
-                        findrouter = true
-                        //parse params
-                        otherurl := requestPath[len("/"+cName+"/"+strings.ToLower(mName)):]
-                        if len(otherurl) > 1 {
-                            plist := strings.Split(otherurl, "/")
-                            for k, v := range plist[1:] {
-                                context.Input.Params[strconv.Itoa(k)] = v
-                            }
-                        }
-                        break
+                //routerInfo = route
+                vc := reflect.New(route.controllerType)
+                execController, ok := vc.Interface().(ControllerInterface)
+                if !ok {
+                    panic("controller is not ControllerInterface")
+                }
+                //call the controller init function
+                execController.Init(context, route.controllerType.Name(), runMethod, vc.Interface())
+                //call prepare function
+                execController.Prepare()
+                if !w.started {
+                    //exec main logic
+                    switch runMethod {
+                    case "Get":
+                        execController.Get()
+                    case "Post":
+                        execController.Post()
+                    case "Delete":
+                        execController.Delete()
+                    case "Put":
+                        execController.Put()
+                    case "Head":
+                        execController.Head()
+                    case "Patch":
+                        execController.Patch()
+                    case "Options":
+                        execController.Options()
+                    default:
+                        in := make([]reflect.Value, 0)
+                        method := vc.MethodByName(runMethod)
+                        method.Call(in)
                     }
+
                 }
+
+                // finish all runrouter. release resource
+                execController.Finish()
+            } else {
+                context.Output.RESTMethodNotAllowed(errors.New("Method Not Allowed"))
             }
+        } else {
+            context.Output.RESTBadRequest(errors.New("Bad Request"))
         }
-    }
-
-    //if no matches to url, throw a not found exception
-    if !findrouter {
-        middleware.Exception("404", rw, r, "")
-        goto Admin
-    }
-
-    if findrouter {
-        isRunable := false
-        if routerInfo != nil {
-            if routerInfo.routerType == routerTypeRESTFul {
-                if _, ok := routerInfo.methods[strings.ToLower(r.Method)]; ok {
-                    isRunable = true
-                    routerInfo.runfunction(context)
-                } else {
-                    middleware.Exception("405", rw, r, "Method Not Allowed")
-                    goto Admin
-                }
-            } else if routerInfo.routerType == routerTypeHandler {
-                isRunable = true
-                routerInfo.handler.ServeHTTP(rw, r)
-            }
-        }
-
-        if !isRunable {
-            //Invoke the request handler
-            vc := reflect.New(runrouter)
-            execController, ok := vc.Interface().(ControllerInterface)
-            if !ok {
-                panic("controller is not ControllerInterface")
-            }
-
-            //call the controller init function
-            execController.Init(context, runrouter.Name(), runMethod, vc.Interface())
-
-            //call prepare function
-            execController.Prepare()
-
-            //if XSRF is Enable then check cookie where there has any cookie in the  request's cookie _csrf
-            if EnableXSRF {
-                execController.XsrfToken()
-                if r.Method == "POST" || r.Method == "DELETE" || r.Method == "PUT" ||
-                    (r.Method == "POST" && (r.Form.Get("_method") == "delete" || r.Form.Get("_method") == "put")) {
-                    execController.CheckXsrfCookie()
-                }
-            }
-
-            if !w.started {
-                //exec main logic
-                switch runMethod {
-                case "Get":
-                    execController.Get()
-                case "Post":
-                    execController.Post()
-                case "Delete":
-                    execController.Delete()
-                case "Put":
-                    execController.Put()
-                case "Head":
-                    execController.Head()
-                case "Patch":
-                    execController.Patch()
-                case "Options":
-                    execController.Options()
-                default:
-                    in := make([]reflect.Value, 0)
-                    method := vc.MethodByName(runMethod)
-                    method.Call(in)
-                }
-
-                //render template
-                if !w.started && !context.Input.IsWebsocket() {
-                    if AutoRender {
-                        if err := execController.Render(); err != nil {
-                            panic(err)
-                        }
-
-                    }
-                }
-            }
-
-            // finish all runrouter. release resource
-            execController.Finish()
-        }
-
     }
 
 Admin:
