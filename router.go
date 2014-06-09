@@ -670,7 +670,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     parseRequest(requestPath, context)
 
     if endpoint := context.Input.GetData("_endpoint").(string); endpoint != "" {
-        Debug("endpoint: ", endpoint)
+        //Debug("endpoint: ", endpoint)
         if route, ok := p.zhaoRouter[endpoint]; ok {
             runMethod = p.getZhaoRunMethod(r.Method, context, route)
             if runMethod != "" {
@@ -716,6 +716,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
                 context.Output.RESTMethodNotAllowed(errors.New("Method Not Allowed"))
             }
         } else {
+            //Debug("not found endpoint: ", endpoint)
             context.Output.RESTBadRequest(errors.New("Bad Request"))
         }
     }
