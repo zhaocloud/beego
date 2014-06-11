@@ -69,6 +69,11 @@ var (
     AdminHttpPort          int
     FlashName              string // name of the flash variable found in response header and cookie
     FlashSeperator         string // used to seperate flash key:value
+
+    //added by odin
+    Daemonize bool   // daemonize or not
+    ProcName  string //proc name
+    PidFile   string //pidfile abs path
 )
 
 func init() {
@@ -79,6 +84,8 @@ func init() {
     workPath, _ = filepath.Abs(workPath)
     // initialize default configurations
     AppPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+    //added by odin
+    ProcName = filepath.Base(os.Args[0])
 
     AppConfigPath = filepath.Join(AppPath, "conf", "app.conf")
 
@@ -145,6 +152,10 @@ func init() {
 
     FlashName = "BEEGO_FLASH"
     FlashSeperator = "BEEGOFLASH"
+
+    //added by odin
+    Daemonize = false
+    PidFile = filepath.Join(AppPath, "run", ProcName+".pid")
 
     runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -310,6 +321,19 @@ func ParseConfig() (err error) {
 
         if flashseperator := AppConfig.String("FlashSeperator"); flashseperator != "" {
             FlashSeperator = flashseperator
+        }
+
+        //added by odin
+        if daemonize, err := AppConfig.Bool("Daemonize"); err == nil {
+            Daemonize = daemonize
+        }
+        if pidfile := AppConfig.String("PidFile"); pidfile != "" {
+            // make sure pidfile is abs path
+            if filepath.IsAbs(pidfile) {
+                PidFile = pidfile
+            } else {
+                PidFile = filepath.Join(AppPath, pidfile)
+            }
         }
 
         if sd := AppConfig.String("StaticDir"); sd != "" {

@@ -15,6 +15,7 @@ import (
     "strings"
 
     "github.com/VividCortex/godaemon"
+    "github.com/nightlyone/lockfile"
     "github.com/zhaocloud/beego/middleware"
     "github.com/zhaocloud/beego/session"
 )
@@ -237,7 +238,18 @@ func AddAPPStartHook(hf hookfunc) {
 // Run beego application.
 // it's alias of App.Run.
 func Run() {
-    godaemon.MakeDaemon(&godaemon.DaemonAttr{})
+    if Daemonize {
+        godaemon.MakeDaemon(&godaemon.DaemonAttr{})
+    }
+    //check&write pidfile, added by odin
+    if l, err := lockfile.New(PidFile); err == nil {
+        if le := l.TryLock(); le != nil {
+            panic(le)
+        }
+    } else {
+        panic(err)
+    }
+
     initBeforeHttpRun()
 
     if EnableAdmin {
