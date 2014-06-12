@@ -60,3 +60,44 @@ func (output *BeegoOutput) RESTJson(status int, data interface{}, hasIndent bool
     }
     return nil
 }
+
+// 获取回应的总长度,包括Header, 以及 response Header的内容
+func (output *BeegoOutput) GetOutputInfo(code int) (l int, hs []byte) {
+    //status line
+    codestring := strconv.Itoa(code)
+    text, ok := StatusText[code]
+    if !ok {
+        text = "status code " + codestring
+    }
+    l = len("HTTP/1.1 "+codestring+" "+text) + len(CRLF) //HTTP/1.1 200 OK\r\n
+    //headers
+    headers := output.Context.ResponseWriter.Header()
+    for key, vals := range headers {
+        for _, val := range vals {
+            l += len(key) + len(ColonSpace) + len(val) + len(CRLF)
+        }
+    }
+    l += len(CRLF) * 2 //最后连续两个\r\n才到body
+    cl, _ := strconv.Atoi(headers.Get("Content-Length"))
+    l += cl
+    hs, _ = json.Marshal(headers)
+
+    return l, hs
+}
+
+func (input *BeegoInput) GetInputInfo() (l int, hs []byte) {
+    l = len(input.Method()+" "+input.Uri()+" "+input.Protocol()) + len(CRLF)
+
+    headers := input.Request.Header
+    for key, vals := range headers {
+        for _, val := range vals {
+            l += len(key) + len(ColonSpace) + len(val) + len(CRLF)
+        }
+    }
+    l += len(CRLF) * 2 //最后连续两个\r\n才到body
+    cl, _ := strconv.Atoi(headers.Get("Content-Length"))
+    l += cl
+    hs, _ = json.Marshal(headers)
+
+    return l, hs
+}

@@ -7,10 +7,12 @@
 package beego
 
 import (
+    "fmt"
     "net/http"
     "os"
     "path"
     "path/filepath"
+    "runtime"
     "strconv"
     "strings"
 
@@ -238,6 +240,20 @@ func AddAPPStartHook(hf hookfunc) {
 // Run beego application.
 // it's alias of App.Run.
 func Run() {
+    defer func() {
+        if err := recover(); err != nil {
+            var stack string
+            Critical("Handler crashed with error", err)
+            for i := 1; ; i++ {
+                _, file, line, ok := runtime.Caller(i)
+                if !ok {
+                    break
+                }
+                Critical(file, line)
+                stack = stack + fmt.Sprintln(file, line)
+            }
+        }
+    }()
     if Daemonize {
         godaemon.MakeDaemon(&godaemon.DaemonAttr{})
     }

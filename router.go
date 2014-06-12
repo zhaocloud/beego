@@ -608,6 +608,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     w := &responseWriter{writer: rw}
     w.Header().Set("Server", BeegoServerName)
+    //w.Header().Set("Date", starttime.Format(time.RFC1123))
 
     // init context
     context := &beecontext.Context{
