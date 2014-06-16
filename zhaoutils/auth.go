@@ -19,15 +19,16 @@ type ZhaoAuth struct {
     ExpectedSign   string
 }
 
-/* {{{
+/* {{{ CheckZhaoAuth
  */
 func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
+    return nil
     za.ClientUniqueID = r.Header.Get("X-Zhao-DeviceId") //不区分大小写
     za.Date = r.Header.Get("Date")
     za.Path = r.URL.Path
-    if za.ClientUniqueID == "" || za.Date == "" {
-        return errors.New("not enough info")
-    }
+    //if za.ClientUniqueID == "" || za.Date == "" {
+    //    return errors.New("not enough info")
+    //}
     // todo: check date time
 
     authHeader := r.Header.Get("Authorization")
@@ -74,6 +75,10 @@ func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
 
 /* }}} */
 
+/* {{{ get secretkey
+ */
 func (za *ZhaoAuth) getSecretKey() string {
     return "abc"
 }
+
+/* }}} */
