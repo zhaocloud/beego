@@ -44,3 +44,8 @@ func (output *BeegoOutput) RESTMethodNotAllowed(err interface{}) {
 func (output *BeegoOutput) RESTBadRequest(err interface{}) {
     output.RESTError(http.StatusBadRequest, err)
 }
+
+// NotFound
+func (output *BeegoOutput) RESTUnauthorized(err interface{}) {
+    output.RESTError(http.StatusUnauthorized, err)
+}

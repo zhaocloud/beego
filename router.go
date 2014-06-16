@@ -23,6 +23,7 @@ import (
     "github.com/zhaocloud/beego/middleware"
     "github.com/zhaocloud/beego/toolbox"
     "github.com/zhaocloud/beego/utils"
+    "github.com/zhaocloud/beego/zhaoutils"
 )
 
 const (
@@ -605,6 +606,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     var runrouter reflect.Type
     var runMethod string
     params := make(map[string]string)
+    zhaoAuth := &zhaoutils.ZhaoAuth{}
 
     w := &responseWriter{writer: rw}
     w.Header().Set("Server", BeegoServerName)
@@ -643,6 +645,9 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         SaveAccess(starttime, context)
     }()
 
+    //解析请求
+    parseRequest(requestPath, context)
+
     // session init
     if SessionOn {
         context.Input.CruSession = GlobalSessions.SessionStart(w, r)
@@ -667,8 +672,13 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         context.Input.ParseFormOrMulitForm(MaxMemory)
     }
 
-    //解析请求
-    parseRequest(requestPath, context)
+    //zhao auth
+    if err := zhaoAuth.CheckZhaoAuth(r); err != nil {
+        Critical("zhao auth failed: ", err)
+        Critical("zhao auth failed: signature(", zhaoAuth.Signature, "), expectedSign(", zhaoAuth.ExpectedSign, ")")
+        context.Output.RESTUnauthorized(err)
+        goto Admin
+    }
 
     if endpoint := context.Input.GetData("_endpoint").(string); endpoint != "" {
         //Debug("endpoint: ", endpoint)
