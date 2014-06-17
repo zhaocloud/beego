@@ -46,17 +46,17 @@ func NewShortUUID() string {
 }
 
 // generate uuid v5
-// ns直接写域名或者url
-func NewUUID5(ns, data string) string {
+// namespace直接写域名或者url
+func NewUUID5(namespace, data string) string {
     //以http开头的为URL, 其余都为DNS
-    if strings.HasPrefix(strings.ToLower(ns), "http") {
-        return uuid.NewSHA1(uuid.NameSpace_URL, []byte(ns+data)).String()
+    if strings.HasPrefix(strings.ToLower(namespace), "http") {
+        return uuid.NewSHA1(uuid.NameSpace_URL, []byte(namespace+data)).String()
     } else {
-        return uuid.NewSHA1(uuid.NameSpace_DNS, []byte(ns+data)).String()
+        return uuid.NewSHA1(uuid.NameSpace_DNS, []byte(namespace+data)).String()
     }
 }
 
-func NewShortUUID5(ns, data string) string {
-    newUUID := NewUUID5(ns, data)
+func NewShortUUID5(namespace, data string) string {
+    newUUID := NewUUID5(namespace, data)
     return shortenUUID(newUUID)
 }
