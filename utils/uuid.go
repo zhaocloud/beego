@@ -8,6 +8,7 @@ import (
     "code.google.com/p/go-uuid/uuid"
     "fmt"
     "math/big"
+    //"strconv"
     "strings"
 )
 
@@ -16,15 +17,18 @@ const (
     shortlen = 22 //这个长度是根据alphabet得来的,省略计算步骤
 )
 
-func shortenUUID(s string) (ss string) {
-    uuInt, tr, tm, off := new(big.Int), new(big.Int), new(big.Int), new(big.Int)
+func ShortenUUID(s string) (ss string) {
+    //uuInt, tr, tm, off := new(big.Int), new(big.Int), new(big.Int), new(big.Int)
+    uuInt, off := new(big.Int), new(big.Int)
     //remove "-"
     s = strings.ToLower(strings.Replace(s, "-", "", -1))
-    fmt.Sscan("0x"+s, uuInt)
+    //fmt.Sscan("0x"+s, uuInt)
+    uuInt.SetString(s, 16)
 
     alphaLen := big.NewInt(int64(len(alphabet)))
     for uuInt.Cmp(big.NewInt(0)) > 0 {
-        uuInt, off = tr.DivMod(uuInt, alphaLen, tm)
+        //uuInt, off = tr.DivMod(uuInt, alphaLen, tm)
+        uuInt, off = uuInt.DivMod(uuInt, alphaLen, off)
         ss += string(alphabet[off.Int64()])
     }
     //如果不足22位,用第一个字符补全
@@ -35,6 +39,25 @@ func shortenUUID(s string) (ss string) {
     return
 }
 
+func LengthenUUID(s string) (ls string) {
+    uuInt, off := new(big.Int), new(big.Int)
+    alphaLen := big.NewInt(int64(len(alphabet)))
+    //需要倒序
+    for i := len(s) - 1; i >= 0; i-- {
+        char := s[i]
+        off = big.NewInt(int64(strings.Index(alphabet, string(char))))
+        uuInt = uuInt.Add(uuInt.Mul(uuInt, alphaLen), off)
+    }
+    //转为16进制
+    if b := fmt.Sprintf("%x", uuInt); b != "" {
+        //fmt.Println(b)
+        //b := []byte(b)
+        ls = fmt.Sprintf("%08v-%04v-%04v-%04v-%012v",
+            b[:8], b[8:12], b[12:16], b[16:20], b[20:])
+    }
+    return
+}
+
 //default, version 4
 func NewUUID() string {
     return uuid.New()
@@ -42,7 +65,7 @@ func NewUUID() string {
 
 func NewShortUUID() string {
     newUUID := NewUUID()
-    return shortenUUID(newUUID)
+    return ShortenUUID(newUUID)
 }
 
 // generate uuid v5
@@ -58,5 +81,5 @@ func NewUUID5(namespace, data string) string {
 
 func NewShortUUID5(namespace, data string) string {
     newUUID := NewUUID5(namespace, data)
-    return shortenUUID(newUUID)
+    return ShortenUUID(newUUID)
 }

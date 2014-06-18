@@ -5,6 +5,7 @@ import (
     "crypto/sha1"
     "encoding/base64"
     "errors"
+    "github.com/zhaocloud/beego/utils"
     "net/http"
     "strings"
 )
@@ -77,8 +78,13 @@ func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
 
 /* {{{ get secretkey
  */
-func (za *ZhaoAuth) getSecretKey() string {
-    return "abc"
+func (za *ZhaoAuth) getSecretKey() (sk string) {
+    //暂时用算法解决，之后需要完全随机数,从高速缓存中查询
+    if za.SecretKeyID == "" {
+        return
+    }
+    sk = utils.LengthenUUID(za.SecretKeyID)
+    return
 }
 
 /* }}} */
