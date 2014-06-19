@@ -159,26 +159,31 @@ func init() {
 
     runtime.GOMAXPROCS(runtime.NumCPU())
 
-    // init AccessLogger
-    AccessLogger = logs.NewLogger(10000)
-    if err := AccessLogger.SetLogger("access", "{}"); err != nil {
-        fmt.Println("init access log error:", err)
-    }
+    configErr := ParseConfig()
 
     // init BeeLogger
     BeeLogger = logs.NewLogger(10000)
-    //err := BeeLogger.SetLogger("console", "")
-    err := BeeLogger.SetLogger("file", `{"filename":"logs/debug.log"}`)
+    var err error
+    if Daemonize {
+        err = BeeLogger.SetLogger("file", `{"filename":"logs/debug.log"}`)
+    } else {
+        err = BeeLogger.SetLogger("console", "")
+    }
     if err != nil {
         fmt.Println("init console log error:", err)
     }
     BeeLogger.EnableFuncCallDepth(true)
     BeeLogger.SetLogFuncCallDepth(3)
 
-    err = ParseConfig()
-    if err != nil && !os.IsNotExist(err) {
+    if configErr != nil && !os.IsNotExist(configErr) {
         // for init if doesn't have app.conf will not panic
         Info(err)
+    }
+
+    // init AccessLogger
+    AccessLogger = logs.NewLogger(10000)
+    if err := AccessLogger.SetLogger("access", "{}"); err != nil {
+        fmt.Println("init access log error:", err)
     }
 }
 
