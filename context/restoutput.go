@@ -11,7 +11,7 @@ import (
 )
 
 func (output *BeegoOutput) RESTJson(status int, data interface{}, hasIndent bool, coding bool) error {
-    output.Header("Content-Type", "application/json;charset=UTF-8")
+    output.Header("Content-Type", "application/json; charset=UTF-8")
     var content []byte
     var err error
     if hasIndent {

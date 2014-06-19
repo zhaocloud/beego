@@ -173,7 +173,7 @@ func sanitizeValue(v string) string {
 // Json writes json to response body.
 // if coding is true, it converts utf-8 to \u0000 type.
 func (output *BeegoOutput) Json(data interface{}, hasIndent bool, coding bool) error {
-    output.Header("Content-Type", "application/json;charset=UTF-8")
+    output.Header("Content-Type", "application/json; charset=UTF-8")
     var content []byte
     var err error
     if hasIndent {
@@ -194,7 +194,7 @@ func (output *BeegoOutput) Json(data interface{}, hasIndent bool, coding bool) e
 
 // Jsonp writes jsonp to response body.
 func (output *BeegoOutput) Jsonp(data interface{}, hasIndent bool) error {
-    output.Header("Content-Type", "application/javascript;charset=UTF-8")
+    output.Header("Content-Type", "application/javascript; charset=UTF-8")
     var content []byte
     var err error
     if hasIndent {
@@ -220,7 +220,7 @@ func (output *BeegoOutput) Jsonp(data interface{}, hasIndent bool) error {
 
 // Xml writes xml string to response body.
 func (output *BeegoOutput) Xml(data interface{}, hasIndent bool) error {
-    output.Header("Content-Type", "application/xml;charset=UTF-8")
+    output.Header("Content-Type", "application/xml; charset=UTF-8")
     var content []byte
     var err error
     if hasIndent {
