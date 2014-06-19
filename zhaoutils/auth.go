@@ -23,7 +23,7 @@ type ZhaoAuth struct {
 /* {{{ CheckZhaoAuth
  */
 func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
-    return nil
+    //return nil
     za.ClientUniqueID = r.Header.Get("X-Zhao-DeviceId") //不区分大小写
     za.Date = r.Header.Get("Date")
     za.Path = r.URL.Path
