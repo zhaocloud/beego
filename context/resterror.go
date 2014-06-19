@@ -15,8 +15,12 @@ type RESTErrorData struct {
 func (output *BeegoOutput) RESTError(status int, err interface{}) {
     errors := make(map[string]string)
     errors["method"] = output.Context.Input.Method()
-    errors["endpoint"] = output.Context.Input.GetData("_endpoint").(string)
-    errors["code"] = "service_panic"
+    if endpoint := output.Context.Input.GetData("_endpoint"); endpoint != nil {
+        errors["endpoint"] = endpoint.(string)
+    } else {
+        errors["endpoint"] = "/"
+    }
+    errors["code"] = "something_wrong"
 
     re := RESTErrorData{
         Massage: fmt.Sprint(err),
@@ -48,4 +52,9 @@ func (output *BeegoOutput) RESTBadRequest(err interface{}) {
 // NotFound
 func (output *BeegoOutput) RESTUnauthorized(err interface{}) {
     output.RESTError(http.StatusUnauthorized, err)
+}
+
+// NotFound
+func (output *BeegoOutput) RESTForbidden(err interface{}) {
+    output.RESTError(http.StatusForbidden, err)
 }

@@ -680,9 +680,9 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         goto Admin
     }
 
-    if endpoint := context.Input.GetData("_endpoint").(string); endpoint != "" {
+    if endpoint := context.Input.GetData("_endpoint"); endpoint != nil {
         //Debug("endpoint: ", endpoint)
-        if route, ok := p.zhaoRouter[endpoint]; ok {
+        if route, ok := p.zhaoRouter[endpoint.(string)]; ok {
             runMethod = p.getZhaoRunMethod(r.Method, context, route)
             if runMethod != "" {
                 context.Input.Params = params
@@ -730,6 +730,8 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
             //Debug("not found endpoint: ", endpoint)
             context.Output.RESTBadRequest(errors.New("Bad Request"))
         }
+    } else {
+        context.Output.RESTForbidden(errors.New("Forbidden"))
     }
 
 Admin:
