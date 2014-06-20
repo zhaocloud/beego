@@ -675,7 +675,8 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     //zhao auth
     if err := zhaoAuth.CheckZhaoAuth(r); err != nil {
         Critical("zhao auth failed: ", err)
-        Critical("zhao auth failed: signature(", zhaoAuth.Signature, "), expectedSign(", zhaoAuth.ExpectedSign, ")")
+        Critical("zhao auth failed: signature:", zhaoAuth.Signature, ", expectedSign:", zhaoAuth.ExpectedSign, ", keyid:",
+            zhaoAuth.SecretKeyID, ", key:", zhaoAuth.SecretKey, ", date:", zhaoAuth.Date, ", path:", zhaoAuth.Path, ", uid:", zhaoAuth.ClientUniqueID)
         context.Output.RESTUnauthorized(err)
         goto Admin
     }

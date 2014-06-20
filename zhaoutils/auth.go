@@ -12,6 +12,7 @@ import (
 
 type ZhaoAuth struct {
     SecretKeyID    string
+    SecretKey      string
     Signature      string
     StringToSign   string
     ClientUniqueID string
@@ -57,12 +58,12 @@ func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
     // StringToSign: HTTP-Verb + "\n" + Date + "\n" + HTTP-Path + "\n" + {ClientUniqueID};
     za.StringToSign = r.Method + "\n" + za.Date + "\n" + za.Path + "\n" + za.ClientUniqueID
 
-    secretKey := za.getSecretKey()
-    if secretKey == "" {
+    za.SecretKey = za.getSecretKey()
+    if za.SecretKey == "" {
         return errors.New("get key error")
     }
 
-    mac := hmac.New(sha1.New, []byte(secretKey))
+    mac := hmac.New(sha1.New, []byte(za.SecretKey))
     mac.Write([]byte(za.StringToSign))
     expectedSign := mac.Sum(nil)
     za.ExpectedSign = base64.StdEncoding.EncodeToString(expectedSign)
