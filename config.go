@@ -74,6 +74,7 @@ var (
     Daemonize bool   // daemonize or not
     ProcName  string //proc name
     PidFile   string //pidfile abs path
+    SkipAuth  []string
 )
 
 func init() {
@@ -156,6 +157,7 @@ func init() {
     //added by odin
     Daemonize = false
     PidFile = filepath.Join(AppPath, "run", ProcName+".pid")
+    SkipAuth = make([]string, 0)
 
     runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -340,6 +342,14 @@ func ParseConfig() (err error) {
                 PidFile = pidfile
             } else {
                 PidFile = filepath.Join(AppPath, pidfile)
+            }
+        }
+        if sa := AppConfig.String("SkipAuth"); sa != "" {
+            skipAuth := strings.Split(sa, ",")
+            if len(skipAuth) > 0 {
+                for _, ep := range skipAuth {
+                    SkipAuth = append(SkipAuth, ep)
+                }
             }
         }
 

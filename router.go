@@ -605,6 +605,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     requestPath := r.URL.Path
     var runrouter reflect.Type
     var runMethod string
+    var endpoint string
     params := make(map[string]string)
     zhaoAuth := &zhaoutils.ZhaoAuth{}
 
@@ -672,18 +673,24 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         context.Input.ParseFormOrMulitForm(MaxMemory)
     }
 
-    //zhao auth
-    if err := zhaoAuth.CheckZhaoAuth(r); err != nil {
-        Critical("zhao auth failed: ", err)
-        Critical("zhao auth failed: signature:", zhaoAuth.Signature, ", expectedSign:", zhaoAuth.ExpectedSign, ", keyid:",
-            zhaoAuth.SecretKeyID, ", key:", zhaoAuth.SecretKey, ", date:", zhaoAuth.Date, ", path:", zhaoAuth.Path, ", uid:", zhaoAuth.ClientUniqueID)
-        context.Output.RESTUnauthorized(err)
-        goto Admin
+    if ep := context.Input.GetData("_endpoint"); ep != nil {
+        endpoint = ep.(string)
     }
 
-    if endpoint := context.Input.GetData("_endpoint"); endpoint != nil {
+    //zhao auth
+    if endpoint != "" && !utils.InSlice(endpoint, SkipAuth) {
+        if err := zhaoAuth.CheckZhaoAuth(r); err != nil {
+            Critical("zhao auth failed: ", err)
+            Critical("zhao auth failed: signature:", zhaoAuth.Signature, ", expectedSign:", zhaoAuth.ExpectedSign, ", keyid:",
+                zhaoAuth.SecretKeyID, ", key:", zhaoAuth.SecretKey, ", date:", zhaoAuth.Date, ", path:", zhaoAuth.Path, ", uid:", zhaoAuth.ClientUniqueID)
+            context.Output.RESTUnauthorized(err)
+            goto Admin
+        }
+    }
+
+    if endpoint != "" {
         //Debug("endpoint: ", endpoint)
-        if route, ok := p.zhaoRouter[endpoint.(string)]; ok {
+        if route, ok := p.zhaoRouter[endpoint]; ok {
             runMethod = p.getZhaoRunMethod(r.Method, context, route)
             if runMethod != "" {
                 context.Input.Params = params
