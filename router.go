@@ -739,6 +739,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
             context.Output.RESTBadRequest(errors.New("Bad Request"))
         }
     } else {
+        //root
         context.Output.RESTForbidden(errors.New("Forbidden"))
     }
 

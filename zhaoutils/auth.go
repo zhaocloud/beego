@@ -39,7 +39,7 @@ func (za *ZhaoAuth) CheckZhaoAuth(r *http.Request) error {
     as := strings.SplitN(authHeader, " ", 2)
 
     if len(as) != 2 || strings.ToLower(as[0]) != "zhao" {
-        return errors.New("not zhaocloud authorization")
+        return errors.New("require authorization")
     }
 
     s := strings.SplitN(as[1], ":", 2)

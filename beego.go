@@ -243,7 +243,7 @@ func Run() {
     defer func() {
         if err := recover(); err != nil {
             var stack string
-            Critical("Handler crashed with error", err)
+            Critical("Handler crashed with error:", err)
             for i := 1; ; i++ {
                 _, file, line, ok := runtime.Caller(i)
                 if !ok {
@@ -258,6 +258,15 @@ func Run() {
         godaemon.MakeDaemon(&godaemon.DaemonAttr{})
     }
     //check&write pidfile, added by odin
+    dir := filepath.Dir(PidFile)
+    if _, err := os.Stat(dir); err != nil {
+        if os.IsNotExist(err) {
+            //mkdir
+            if err := os.Mkdir(dir, 0755); err != nil {
+                panic(err)
+            }
+        }
+    }
     if l, err := lockfile.New(PidFile); err == nil {
         if le := l.TryLock(); le != nil {
             panic(le)
