@@ -1,14 +1,8 @@
 ## beego
 
-[![Build Status](https://drone.io/github.com/astaxie/beego/status.png)](https://drone.io/github.com/astaxie/beego/latest)
+修改自github.com/astaxie/beego
 
-beego is a Go Framework inspired by tornado and sinatra.
-
-It is a simple & powerful web framework.
-
-More info [beego.me](http://beego.me)
-
-## Features
+## Original Features
 
 * RESTful support
 * MVC architecture
@@ -20,20 +14,24 @@ More info [beego.me](http://beego.me)
 * Friendly displaying of errors
 * Useful template functions
 
+## Added Features
 
-## Documentation
+* Daemonize, 可在app.conf中用 Daemonize={bool}配置, pidfile默认写到程序目录的run/<appname>.pid
+* Access Logging, 默认写到程序目录的logs/access.log
+* 简化路由功能, 只支持/{endpoint}/{rowkeys}/{selector}调度
 
-[English](http://beego.me/docs/intro/)
+## 使用
+* main.go去除router.go,加上`_ "zhaoonline.com/applications/controllers"`
 
-[API](http://gowalker.org/github.com/astaxie/beego)
+* controller对应endpoint需要如下代码(字符串对应,首字母大写,尖括号<>包含的内容可变):
 
-[中文文档](http://beego.me/docs/intro/)
+```
+type <Endpoint>Controller struct {
+        beego.Controller
+}
 
+func init() {
+    beego.RegistZhaoController(&<Endpoint>Controller{})
+}
+```
 
-## LICENSE
-
-beego is licensed under the Apache Licence, Version 2.0
-(http://www.apache.org/licenses/LICENSE-2.0.html).
-
-[![Clone in Koding](http://learn.koding.com/btn/clone_d.png)][koding]
-[koding]: https://koding.com/Teamwork?import=https://github.com/astaxie/beego/archive/master.zip&c=git1
