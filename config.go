@@ -71,10 +71,11 @@ var (
     FlashSeperator         string // used to seperate flash key:value
 
     //added by odin
-    Daemonize bool   // daemonize or not
-    ProcName  string //proc name
-    PidFile   string //pidfile abs path
-    SkipAuth  []string
+    Daemonize  bool   // daemonize or not
+    ProcName   string //proc name
+    PidFile    string //pidfile abs path
+    SkipAuth   []string
+    DebugLevel int
 )
 
 func init() {
@@ -158,6 +159,7 @@ func init() {
     Daemonize = false
     PidFile = filepath.Join(AppPath, "run", ProcName+".pid")
     SkipAuth = make([]string, 0)
+    DebugLevel = LevelTrace //默认debug等级
 
     runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -176,6 +178,7 @@ func init() {
     }
     BeeLogger.EnableFuncCallDepth(true)
     BeeLogger.SetLogFuncCallDepth(3)
+    BeeLogger.SetLevel(DebugLevel)
 
     if configErr != nil && !os.IsNotExist(configErr) {
         // for init if doesn't have app.conf will not panic
@@ -351,6 +354,9 @@ func ParseConfig() (err error) {
                     SkipAuth = append(SkipAuth, ep)
                 }
             }
+        }
+        if level, err := AppConfig.Int("DebugLevel"); err == nil {
+            DebugLevel = level
         }
 
         if sd := AppConfig.String("StaticDir"); sd != "" {

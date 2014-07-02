@@ -18,6 +18,8 @@
 
 * Daemonize, 可在app.conf中用 Daemonize={bool}配置, pidfile默认写到程序目录的run/<appname>.pid
 * Access Logging, 默认写到程序目录的logs/access.log
+* DebugLevel配置,app.conf中 DebugLevel={int}配置,数字越高级别越高
+* utils 增加uuid.go, 可生成正常的uuid以及22字节长的短uuid
 * 简化路由功能, 只支持/{endpoint}/{rowkeys}/{selector}调度
 
 ## 使用
