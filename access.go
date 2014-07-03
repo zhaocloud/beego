@@ -32,9 +32,10 @@ func SaveAccess(start time.Time, context *beecontext.Context) {
     logUri := strconv.Quote(context.Input.Uri())
     logProtocol := strconv.Quote(context.Input.Protocol())
     requestTime := strconv.FormatFloat(time.Since(start).Seconds(), 'f', 6, 64)
+    rBody := strconv.Quote(string(context.Input.RequestBody))
     //userAgent := strconv.Quote(context.Input.UserAgent())
 
-    Access(logTime, logIP, requestSize, sc, sentSize, logMethod, logUri, logProtocol, requestTime, headerStr, rHeaderStr)
+    Access(logTime, logIP, requestSize, sc, sentSize, logMethod, logUri, logProtocol, requestTime, headerStr, rHeaderStr, rBody)
 }
 
 func Access(v ...interface{}) {
