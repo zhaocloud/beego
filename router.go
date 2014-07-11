@@ -42,6 +42,8 @@ const (
 )
 
 var (
+    //zhao auth
+    ZhaoAuth *zhaoutils.ZhaoAuth
     // supported http methods.
     HTTPMETHOD = []string{"get", "post", "put", "delete", "patch", "options", "head", "trace", "connect"}
     // these beego.Controller's methods shouldn't reflect to AutoRouter
@@ -607,7 +609,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
     var runMethod string
     var endpoint string
     params := make(map[string]string)
-    zhaoAuth := &zhaoutils.ZhaoAuth{}
+    ZhaoAuth = &zhaoutils.ZhaoAuth{}
 
     w := &responseWriter{writer: rw}
     w.Header().Set("Server", BeegoServerName)
@@ -679,10 +681,10 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 
     //zhao auth
     if endpoint != "" && !utils.InSlice(endpoint, SkipAuth) {
-        if err := zhaoAuth.CheckZhaoAuth(r); err != nil {
+        if err := ZhaoAuth.CheckZhaoAuth(r); err != nil {
             Critical("zhao auth failed: ", err)
-            Critical("zhao auth failed: signature:", zhaoAuth.Signature, ", expectedSign:", zhaoAuth.ExpectedSign, ", keyid:",
-                zhaoAuth.SecretKeyID, ", key:", zhaoAuth.SecretKey, ", date:", zhaoAuth.Date, ", path:", zhaoAuth.Path, ", uid:", zhaoAuth.ClientUniqueID)
+            Critical("zhao auth failed: signature:", ZhaoAuth.Signature, ", expectedSign:", ZhaoAuth.ExpectedSign, ", keyid:",
+                ZhaoAuth.SecretKeyID, ", key:", ZhaoAuth.SecretKey, ", date:", ZhaoAuth.Date, ", path:", ZhaoAuth.Path, ", uid:", ZhaoAuth.ClientUniqueID)
             context.Output.RESTUnauthorized(err)
             goto Admin
         }
