@@ -30,10 +30,11 @@ func (c *Controller) ServeREST(err error, encoding ...bool) {
     if err == nil {
         method := strings.ToLower(c.Ctx.Input.Method())
         if _, ok := SUCCODE[method]; !ok {
-            status = SUCCODE[method]
-        } else {
             status = http.StatusOK
+        } else {
+            status = SUCCODE[method]
         }
+        //Debug("method:", method, "; status:", status)
         //c.Ctx.Output.Json(c.Data["json"], hasIndent, hasencoding)
         c.Ctx.Output.RESTJson(status, c.Data["json"], hasIndent, hasencoding)
     } else {
