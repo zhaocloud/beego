@@ -52,8 +52,10 @@ func LengthenUUID(s string) (ls string) {
     if b := fmt.Sprintf("%x", uuInt); b != "" {
         //fmt.Println(b)
         //b := []byte(b)
+        ll := len(b)
+        //考虑到前缀为零的情况. 倒过来,先满足后面的字符位数
         ls = fmt.Sprintf("%08v-%04v-%04v-%04v-%012v",
-            b[:8], b[8:12], b[12:16], b[16:20], b[20:])
+            b[:ll-24], b[ll-24:ll-20], b[ll-20:ll-16], b[ll-16:ll-12], b[ll-12:])
     }
     return
 }
