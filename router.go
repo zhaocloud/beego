@@ -17,6 +17,7 @@ import (
     "regexp"
     "runtime"
     "strings"
+    "strconv"
     "time"
 
     beecontext "github.com/zhaocloud/beego/context"
@@ -684,7 +685,7 @@ func (p *ControllerRegistor) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
         if err := ZhaoAuth.CheckZhaoAuth(r); err != nil {
             Critical("zhao auth failed: ", err)
             Critical("zhao auth failed: signature:", ZhaoAuth.Signature, ", expectedSign:", ZhaoAuth.ExpectedSign, ", keyid:",
-                ZhaoAuth.SecretKeyID, ", key:", ZhaoAuth.SecretKey, ", date:", ZhaoAuth.Date, ", path:", ZhaoAuth.Path, ", uid:", ZhaoAuth.ClientUniqueID)
+            ZhaoAuth.SecretKeyID, ", key:", ZhaoAuth.SecretKey, ", date:", ZhaoAuth.Date, ", path:", ZhaoAuth.Path, ", uid:", ZhaoAuth.ClientUniqueID, ", uid:", strconv.Quote(ZhaoAuth.StringToSign))
             context.Output.RESTUnauthorized(err)
             goto Admin
         }
