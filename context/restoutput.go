@@ -77,7 +77,7 @@ func (output *BeegoOutput) GetOutputInfo(code int) (l int, hs []byte) {
             l += len(key) + len(ColonSpace) + len(val) + len(CRLF)
         }
     }
-    l += len(CRLF) * 2 //最后连续两个\r\n才到body
+    l += len(CRLF) //最后连续两个\r\n才到body
     cl, _ := strconv.Atoi(headers.Get("Content-Length"))
     l += cl
     hs, _ = json.Marshal(headers)
